@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+
+# 🟢 Jose Academy Setup Script - Arch Linux 🟢
+# Este script automatiza la configuración estética (Matrix/Pacman)
+
+echo "🚀 Iniciando configuración de Jose Academy..."
+
+# 1. Instalación de paquetes
+sudo pacman -Syu --noconfirm
+sudo pacman -S zsh git curl feh alacritty picom polybar rofi firefox ttf-meslo-nerd noto-fonts-emoji noto-fonts-cjk --noconfirm
+
+# 2. Configurar Pacman (ILoveCandy)
+if ! grep -q "ILoveCandy" /etc/pacman.conf; then
+    sudo sed -i '/\[options\]/a ILoveCandy' /etc/pacman.conf
+    sudo sed -i '/\[options\]/a Color' /etc/pacman.conf
+    echo "🍬 ILoveCandy activado."
+fi
+
+# 3. Directorios necesarios
+mkdir -p ~/.config/{alacritty,picom,polybar,rofi}
+
+# 4. Alacritty Config
+cat << 'EOF' > ~/.config/alacritty/alacritty.toml
+[window]
+title = "Jose Academy"
+dynamic_title = false
+
+[font.normal]
+family = "MesloLGS Nerd Font"
+
+[colors.primary]
+background = "#050505"
+foreground = "#00FF41"
+EOF
+
+# 5. Picom Config
+cat << 'EOF' > ~/.config/picom/picom.conf
+backend = "xrender";
+opacity-rule = [
+    "85:class_g = 'Alacritty'"
+];
+EOF
+
+# 6. Rofi Config
+cat << 'EOF' > ~/.config/rofi/config.rasi
+configuration {
+    font: "MesloLGS Nerd Font 12";
+}
+* {
+    bg: #050505E6;
+    fg: #00FF41;
+    background-color: transparent;
+}
+window { background-color: @bg; }
+EOF
+
+# 7. Polybar (Config simplificada)
+cat << 'EOF' > ~/.config/polybar/config.ini
+[colors]
+background = #AA000000
+foreground = #00FF41
+disabled = #007A10
+
+[bar/example]
+width = 100%
+height = 24pt
+background = ${colors.background}
+foreground = ${colors.foreground}
+font-0 = "MesloLGS Nerd Font:size=11;2"
+font-1 = "Noto Sans CJK JP:size=11;2"
+EOF
+
+# 8. Script lanzamiento Polybar
+cat << 'EOF' > ~/.config/polybar/launch.sh
+#!/usr/bin/env bash
+killall -q polybar
+while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
+polybar example >/dev/null 2>&1 &
+EOF
+chmod +x ~/.config/polybar/launch.sh
+
+echo "✅ Configuración finalizada. Reinicia tu entorno (Super+Alt+R)."
+"""
+
+# Save the script
+with open("jose_academy_setup.sh", "w", encoding="utf-8") as f:
+    f.write(bash_script)
+
+print("File generated successfully: jose_academy_setup.sh")
